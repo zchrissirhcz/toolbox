@@ -69,14 +69,14 @@ template<class T> void imPad( T *A, T *B, int h, int w, int d, int pt, int pb,
 // B = imPadMex(A,pad,type); see imPad.m for usage details
 #ifdef MATLAB_MEX_FILE
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-  int *ns, ms[3], nCh, nDims, pt, pb, pl, pr, flag, k; double *p;
+  mwSize *ns, ms[3]; int nCh, nDims, pt, pb, pl, pr, flag, k; double *p;
   void *A, *B; mxClassID id; double val=0; char type[1024];
 
   // Error checking on arguments
   if( nrhs!=3 ) mexErrMsgTxt("Three inputs expected.");
   if( nlhs>1 ) mexErrMsgTxt("One output expected.");
   nDims=mxGetNumberOfDimensions(prhs[0]); id=mxGetClassID(prhs[0]);
-  ns = (int*) mxGetDimensions(prhs[0]); nCh=(nDims==2) ? 1 : ns[2];
+  ns = (mwSize*) mxGetDimensions(prhs[0]); nCh=(nDims==2) ? 1 : ns[2];
   if( (nDims!=2 && nDims!=3) ||
     (id!=mxSINGLE_CLASS && id!=mxDOUBLE_CLASS && id!=mxUINT8_CLASS) )
     mexErrMsgTxt("A should be 2D or 3D single, double or uint8 array.");
@@ -103,8 +103,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   // create output array
   ms[0]=ns[0]+pt+pb; ms[1]=ns[1]+pl+pr; ms[2]=nCh;
-  if( ms[0]<0 || ns[0]<=-pt || ns[0]<=-pb ) ms[0]=0;
-  if( ms[1]<0 || ns[1]<=-pl || ns[1]<=-pr ) ms[1]=0;
+  if( int(ms[0])<0 || int(ns[0])<=-pt || int(ns[0])<=-pb ) ms[0]=0;
+  if( int(ms[1])<0 || int(ns[1])<=-pl || int(ns[1])<=-pr ) ms[1]=0;
   plhs[0] = mxCreateNumericArray(3, (const mwSize*) ms, id, mxREAL);
   if( ms[0]==0 || ms[1]==0 ) return;
 
